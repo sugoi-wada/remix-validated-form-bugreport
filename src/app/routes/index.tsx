@@ -1,5 +1,5 @@
 import { withZod } from "@remix-validated-form/with-zod";
-import { useField, ValidatedForm } from "remix-validated-form";
+import { useControlField, useField, ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 
 const validator = withZod(
@@ -12,10 +12,16 @@ type InputProps = { name: string; label: string; formId?: string };
 
 const Input = ({ name, label, formId }: InputProps) => {
   const { error, getInputProps } = useField(name, { formId });
+  const [value, setValue] = useControlField(name, formId);
+
   return (
     <label>
       {label}
-      <input {...getInputProps()} />
+      <input {...getInputProps({
+        id: name,
+        value: value ?? '',
+        onChange: (e) => setValue(e.target.value),
+      })} />
       {error && <p style={{ color: "red" }}>{error}</p>}
     </label>
   );
